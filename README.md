@@ -48,7 +48,7 @@ npm run dev
 
 ## Live Demo
 
-Try it out: [LinkedIn Post Formatter](https://firmwarezhu.github.io/linkedinformat/)
+Visit the live demo at [https://firmwarezhu.github.io/linkedinformat/](https://firmwarezhu.github.io/linkedinformat/)
 
 ## Tutorial: Building Your Own LinkedIn Post Formatter
 
