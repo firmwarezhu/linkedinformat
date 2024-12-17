@@ -1,6 +1,19 @@
-# LinkedIn Post Formatter
+# LinkedIn Post Formatter 📝
 
-A modern web application that helps format and optimize technical content for LinkedIn posts. Built with React, TypeScript, and Tailwind CSS.
+<div align="center">
+
+![LinkedIn Post Formatter](https://raw.githubusercontent.com/firmwarezhu/linkedinformat/main/public/demo.gif)
+
+[![GitHub Stars](https://img.shields.io/github/stars/firmwarezhu/linkedinformat?style=social)](https://github.com/firmwarezhu/linkedinformat/stargazers)
+[![GitHub License](https://img.shields.io/github/license/firmwarezhu/linkedinformat)](https://github.com/firmwarezhu/linkedinformat/blob/main/LICENSE)
+[![GitHub Issues](https://img.shields.io/github/issues/firmwarezhu/linkedinformat)](https://github.com/firmwarezhu/linkedinformat/issues)
+[![Deploy Status](https://github.com/firmwarezhu/linkedinformat/actions/workflows/deploy.yml/badge.svg)](https://github.com/firmwarezhu/linkedinformat/actions)
+
+*Transform your technical content into engaging LinkedIn posts with beautiful formatting and smart hashtags.*
+
+[Demo](https://firmwarezhu.github.io/linkedinformat/) · [Report Bug](https://github.com/firmwarezhu/linkedinformat/issues) · [Request Feature](https://github.com/firmwarezhu/linkedinformat/issues)
+
+</div>
 
 ## Features
 
