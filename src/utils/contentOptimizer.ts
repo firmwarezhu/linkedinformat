@@ -6,16 +6,19 @@ const formatBulletPoints = (text: string): string => {
 
 const formatHeadings = (text: string): string => {
   const lines = text.split('\n');
+  let isFirstHeading = true;
+  
   const formattedLines = lines.map(line => {
     if (line.trim().toLowerCase().endsWith(':')) {
       const title = line.trim().slice(0, -1);
-      const titleCase = title
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ');
+      // Just capitalize first letter, keep rest as is
+      const formattedTitle = title.charAt(0).toUpperCase() + title.slice(1);
       
-      // For technical posts, use a simple diamond marker
-      return `\n💠 ${titleCase}\n`;
+      // Use 💡 for main title, 🔷 for subtopics
+      const marker = isFirstHeading ? '💡' : '🔷';
+      isFirstHeading = false;
+      
+      return `\n${marker} ${formattedTitle}\n`;
     }
     return line;
   });
