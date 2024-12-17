@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/LinkedInFormat/',  // Add this line for GitHub Pages
+  base: '/linkedinformat/',  // Match the exact case of the GitHub repository
   plugins: [react()],
   optimizeDeps: {
     exclude: ['lucide-react'],
