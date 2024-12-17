@@ -15,6 +15,27 @@
 
 </div>
 
+## Setup
+
+1. Clone the repository
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Set up environment variables:
+   - Copy `.env.example` to `.env`
+   - Add your API keys to `.env`:
+```env
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+VITE_XAI_API_KEY=your_xai_api_key_here
+```
+
+4. Start the development server:
+```bash
+npm run dev
+```
+
 ## Features
 
 - 💫 Real-time content formatting
@@ -190,6 +211,12 @@ jobs:
    - Use Tailwind CSS for responsive design
    - Add dark/light mode support
    - Implement copy-to-clipboard functionality
+
+## Security
+
+- API keys are stored in environment variables
+- Environment files (`.env`) are not committed to the repository
+- Use `.env.example` as a template for required environment variables
 
 ## Getting Started
 
