@@ -19,7 +19,7 @@ async function enhanceWithGemini(content: string): Promise<string> {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
     const prompt = `
-    Format this LinkedIn post for better readability while keeping ALL content intact:
+    Format this LinkedIn post for better readability while keeping ALL content intact and add relevant hashtags:
 
     Formatting rules:
     1. Add "💡" only at the start of main titles
@@ -30,6 +30,12 @@ async function enhanceWithGemini(content: string): Promise<string> {
     6. Keep technical terms and code references exactly as they are
     7. Remove any markers or symbols at the end of lines
     8. Keep bullet points clean without trailing punctuation
+    9. Add 3-5 relevant hashtags at the end of the post, based on:
+       - Main topics and themes
+       - Industry-specific terms
+       - Technical skills mentioned
+       - Separate hashtags with spaces
+       - Format as #camelCase or #TitleCase
 
     Example format:
     💡 **Main Title**
@@ -41,6 +47,8 @@ async function enhanceWithGemini(content: string): Promise<string> {
     🔷 **Section 2**
     - Technical detail
     - Implementation detail
+
+    #RelevantTopic #IndustryTerm #TechnicalSkill
 
     Original content:
     ${content}
