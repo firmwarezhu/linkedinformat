@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, Sparkles, RotateCcw, Save } from 'lucide-react';
+import { Copy, Sparkles, RotateCcw, Save, Trash2 } from 'lucide-react';
 import { optimizeContent } from '../utils/contentOptimizer';
 import { enhanceContentWithAI } from '../utils/aiService';
 
@@ -78,84 +78,117 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
   const displayedOutput = showAiVersion ? aiEnhancedOutput : optimizedOutput;
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-700">Original Content</h2>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleUndo}
-              disabled={historyIndex <= 0}
-              className={`p-2 rounded-lg transition-all ${
-                historyIndex <= 0 
-                  ? 'bg-gray-100 text-gray-400' 
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
-              }`}
-              title="Undo"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setAutoSave(!autoSave)}
-              className={`p-2 rounded-lg transition-all ${
-                autoSave 
-                  ? 'bg-blue-100 text-blue-600' 
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
-              }`}
-              title={autoSave ? 'Auto-save enabled' : 'Auto-save disabled'}
-            >
-              <Save className="w-4 h-4" />
-            </button>
+    <div className="flex flex-col gap-6">
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-700">Original Content</h2>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleUndo}
+                disabled={historyIndex <= 0}
+                className={`p-2 rounded-lg transition-all ${
+                  historyIndex <= 0
+                    ? 'bg-gray-100 text-gray-400'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                }`}
+                title="Undo"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setAutoSave(!autoSave)}
+                className={`p-2 rounded-lg transition-all ${
+                  autoSave
+                    ? 'bg-blue-100 text-blue-600'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                }`}
+                title={autoSave ? 'Auto-save enabled' : 'Auto-save disabled'}
+              >
+                <Save className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          <textarea
+            value={inputContent}
+            onChange={(e) => setInputContent(e.target.value)}
+            placeholder="Paste your content here..."
+            className="w-full h-[400px] p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"
+          />
+          <div className="flex items-center justify-between mt-2">
+            <div className="text-sm text-gray-500">
+              {characterCount} characters · {wordCount} words
+            </div>
+            <div className="flex items-center gap-2">
+              <select
+                value={aiProvider}
+                onChange={(e) => setAiProvider(e.target.value as 'gemini' | 'xai')}
+                className="px-3 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-9"
+                disabled={isEnhancing}
+              >
+                <option value="gemini">Gemini AI</option>
+                <option value="xai">XAI</option>
+              </select>
+              <button
+                onClick={handleAIEnhance}
+                disabled={isEnhancing}
+                className={`flex items-center gap-2 px-3 py-1 h-9 rounded-lg whitespace-nowrap transition-all ${
+                  isEnhancing
+                    ? 'bg-purple-400 cursor-not-allowed'
+                    : 'bg-purple-600 hover:bg-purple-700'
+                } text-white`}
+              >
+                <Sparkles className="w-4 h-4" />
+                {isEnhancing ? 'Enhancing...' : 'AI Enhance'}
+              </button>
+            </div>
           </div>
         </div>
-        <textarea
-          value={inputContent}
-          onChange={(e) => setInputContent(e.target.value)}
-          placeholder="Paste your content here..."
-          className="w-full h-[400px] p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"
-        />
-        <div className="flex items-center justify-between mt-2">
-          <div className="text-sm text-gray-500">
-            {characterCount} characters · {wordCount} words
-          </div>
-          <div className="flex items-center gap-2">
-            <select
-              value={aiProvider}
-              onChange={(e) => setAiProvider(e.target.value as 'gemini' | 'xai')}
-              className="px-3 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={isEnhancing}
-            >
-              <option value="gemini">Gemini AI</option>
-              <option value="xai">XAI</option>
-            </select>
-            <button
-              onClick={handleAIEnhance}
-              disabled={isEnhancing}
-              className={`flex items-center gap-2 px-4 py-1 rounded-lg transition-all ${
-                isEnhancing
-                  ? 'bg-purple-400 cursor-not-allowed'
-                  : 'bg-purple-600 hover:bg-purple-700'
-              } text-white`}
-            >
-              <Sparkles className="w-4 h-4" />
-              {isEnhancing ? 'Enhancing...' : 'AI Enhance'}
-            </button>
-          </div>
-        </div>
-      </div>
 
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <div className="flex flex-col gap-3 mb-4">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="mb-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-blue-500" />
+                LinkedIn-Ready Version
+              </h2>
+            </div>
+          </div>
+          <div className="w-full h-[400px] p-4 bg-gray-50 rounded-lg overflow-y-auto mb-4">
+            <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed">
+              {displayedOutput}
+            </div>
+          </div>
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-blue-500" />
-              LinkedIn-Ready Version
-            </h2>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">Format:</span>
+              <button
+                onClick={() => setShowAiVersion(false)}
+                className={`px-4 py-1.5 rounded-lg transition-all ${
+                  !showAiVersion
+                    ? 'bg-blue-100 text-blue-600 font-medium'
+                    : 'bg-gray-50 hover:bg-gray-100 text-gray-600'
+                }`}
+              >
+                Normal
+              </button>
+              <button
+                onClick={() => setShowAiVersion(true)}
+                className={`px-4 py-1.5 rounded-lg transition-all ${
+                  showAiVersion
+                    ? 'bg-purple-100 text-purple-600 font-medium'
+                    : 'bg-gray-50 hover:bg-gray-100 text-gray-600'
+                }`}
+                disabled={!aiEnhancedOutput}
+              >
+                AI Enhanced
+              </button>
+            </div>
             <button
               onClick={onCopy}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                copied 
-                  ? 'bg-green-500 text-white' 
+                copied
+                  ? 'bg-green-500 text-white'
                   : 'bg-blue-500 hover:bg-blue-600 text-white'
               }`}
             >
@@ -163,36 +196,23 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
               {copied ? 'Copied!' : 'Copy'}
             </button>
           </div>
-          <div className="flex items-center gap-2 border-t pt-3">
-            <span className="text-sm text-gray-500 mr-2">Format:</span>
-            <button
-              onClick={() => setShowAiVersion(false)}
-              className={`px-4 py-1.5 rounded-lg transition-all ${
-                !showAiVersion
-                  ? 'bg-blue-100 text-blue-600 font-medium'
-                  : 'bg-gray-50 hover:bg-gray-100 text-gray-600'
-              }`}
-            >
-              Normal
-            </button>
-            <button
-              onClick={() => setShowAiVersion(true)}
-              className={`px-4 py-1.5 rounded-lg transition-all ${
-                showAiVersion
-                  ? 'bg-purple-100 text-purple-600 font-medium'
-                  : 'bg-gray-50 hover:bg-gray-100 text-gray-600'
-              }`}
-              disabled={!aiEnhancedOutput}
-            >
-              AI Enhanced
-            </button>
-          </div>
         </div>
-        <div className="w-full h-[400px] p-4 bg-gray-50 rounded-lg overflow-y-auto">
-          <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed">
-            {displayedOutput}
-          </div>
-        </div>
+      </div>
+      <div className="flex justify-center">
+        <button
+          onClick={() => {
+            setInputContent('');
+            setHistory([]);
+            setHistoryIndex(-1);
+            setOptimizedOutput('');
+            setAiEnhancedOutput('');
+            setShowAiVersion(false);
+          }}
+          className="flex items-center gap-2 px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+        >
+          <Trash2 className="w-4 h-4" />
+          Clear All Content
+        </button>
       </div>
     </div>
   );
