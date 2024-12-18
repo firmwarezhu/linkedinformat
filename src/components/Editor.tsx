@@ -117,7 +117,7 @@ export function Editor({ content, onContentChange, copied, onCopy }: EditorProps
             </div>
           </div>
           <textarea
-            className="w-full h-48 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full h-96 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
             placeholder="Paste your LinkedIn content here..."
             value={content}
             onChange={(e) => onContentChange(e.target.value)}
@@ -166,7 +166,7 @@ export function Editor({ content, onContentChange, copied, onCopy }: EditorProps
               </h2>
             </div>
           </div>
-          <div className="w-full h-48 p-4 bg-gray-50 rounded-lg overflow-y-auto mb-4">
+          <div className="w-full h-96 p-4 bg-gray-50 rounded-lg overflow-y-auto mb-4">
             <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed">
               {displayedOutput}
             </div>
