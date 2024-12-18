@@ -10,7 +10,6 @@ function App() {
 
   const handleCopy = useCallback(async () => {
     try {
-      // Get fresh optimized content when copying
       const optimizedContent = optimizeContent(inputContent);
       await navigator.clipboard.writeText(optimizedContent);
       setCopied(true);
@@ -22,7 +21,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto space-y-6">
         <Header />
         <Editor
           inputContent={inputContent}

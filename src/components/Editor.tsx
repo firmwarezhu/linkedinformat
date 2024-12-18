@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Copy, Sparkles, RotateCcw, Save, Trash2 } from 'lucide-react';
 import { optimizeContent } from '../utils/contentOptimizer';
-import { enhanceContentWithAI } from '../utils/aiService';
+import { enhanceContent, type AIProvider } from '../utils/aiService';
 
 interface EditorProps {
   inputContent: string;
@@ -17,7 +17,7 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
   const [optimizedOutput, setOptimizedOutput] = useState('');
   const [aiEnhancedOutput, setAiEnhancedOutput] = useState('');
   const [isEnhancing, setIsEnhancing] = useState(false);
-  const [aiProvider, setAiProvider] = useState<'gemini' | 'xai'>('gemini');
+  const [aiProvider, setAiProvider] = useState<AIProvider>('gemini');
   const [showAiVersion, setShowAiVersion] = useState(false);
   const [enhanceError, setEnhanceError] = useState<string | null>(null);
 
@@ -67,7 +67,7 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
       if (!inputContent.trim()) {
         throw new Error('Please enter some content to enhance');
       }
-      const enhancedContent = await enhanceContentWithAI(inputContent, aiProvider);
+      const enhancedContent = await enhanceContent(inputContent, aiProvider);
       setAiEnhancedOutput(enhancedContent);
       setShowAiVersion(true);
     } catch (error) {
@@ -129,7 +129,7 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
             <div className="flex items-center gap-2">
               <select
                 value={aiProvider}
-                onChange={(e) => setAiProvider(e.target.value as 'gemini' | 'xai')}
+                onChange={(e) => setAiProvider(e.target.value as AIProvider)}
                 className="px-3 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-9"
                 disabled={isEnhancing}
               >

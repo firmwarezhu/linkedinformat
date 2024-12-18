@@ -1,26 +1,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Encoded API key (Base64 + simple shift)
-const ENCODED_GEMINI_KEY = 'QUlaYVN5RGFVNXpibmhpWW5aU1ptZHVlRXRqY1VsTVJFMVhRMDQ9'; // Replace with your encoded key
-const XAI_KEY_ENCODED = 'eGFpLTc5UG1jMDluSXVRenBTNnBvd3RXN2J6V2VXMXpIazZhbXBscGY1VjB2bmZ4cEdUb2pMNEtOdk9RQVl2eHpYY0tPc25adG52NW9nZEFCWFBH';
-
-function decodeKey(encodedKey: string): string {
-  try {
-    // First base64 decode
-    const base64Decoded = atob(encodedKey);
-    // Then decode our custom encoding (simple shift in this example)
-    return base64Decoded
-      .split('')
-      .map(char => String.fromCharCode(char.charCodeAt(0) - 1))
-      .join('');
-  } catch (error) {
-    console.error('Error decoding key:', error);
-    return '';
-  }
-}
-
-const GEMINI_API_KEY = decodeKey(ENCODED_GEMINI_KEY);
-const XAI_API_KEY = decodeKey(XAI_KEY_ENCODED);
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const XAI_API_KEY = import.meta.env.VITE_XAI_API_KEY;
 
 if (!GEMINI_API_KEY || !XAI_API_KEY) {
   console.warn('Missing API keys. Please check your environment variables.');
@@ -112,55 +94,35 @@ async function enhanceWithXAI(content: string): Promise<string> {
   }
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://linkedinformat-api.vercel.app';
+const API_URL = 'https://linkedinformat-api.vercel.app';
 
 async function enhanceContent(content: string, provider: AIProvider = 'gemini'): Promise<string> {
-  if (!content || content.trim() === '') {
-    throw new Error('Please enter some content to enhance');
-  }
-
   try {
+    if (!content?.trim()) {
+      throw new Error('Content cannot be empty');
+    }
+
     const response = await fetch(`${API_URL}/api/enhance`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ content, provider }),
+      body: JSON.stringify({
+        content,
+        provider
+      })
     });
 
     if (!response.ok) {
-      let errorMessage = `Error: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.error || errorData.message || errorMessage;
-      } catch {
-        // If error response is not JSON, use status text
-        errorMessage = `${errorMessage} - ${response.statusText}`;
-      }
-
-      if (response.status === 404) {
-        throw new Error('API endpoint not found. Please check your API configuration.');
-      } else if (response.status === 401 || response.status === 403) {
-        throw new Error('API key error. Please check your API configuration.');
-      } else {
-        throw new Error(errorMessage);
-      }
+      const error = await response.text();
+      throw new Error(error || 'Failed to enhance content');
     }
 
     const data = await response.json();
-    
-    if (!data.enhancedContent) {
-      throw new Error('No enhanced content received from the API');
-    }
-    
     return data.enhancedContent;
   } catch (error) {
     console.error('Error enhancing content:', error);
-    if (error instanceof Error) {
-      throw new Error(`Failed to enhance content: ${error.message}`);
-    } else {
-      throw new Error('An unexpected error occurred while enhancing the content');
-    }
+    throw error;
   }
 }
 

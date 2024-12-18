@@ -1,31 +1,32 @@
 import React, { useState } from 'react';
 import { optimizeContent } from '../utils/contentOptimizer';
-import { enhanceContentWithAI } from '../utils/aiService';
+import { enhanceContent, type AIProvider } from '../utils/aiService';
 
 interface ContentFormatterProps {
   content: string;
-  onFormat: (formattedContent: string) => void;
+  onUpdate: (content: string) => void;
 }
 
-export const ContentFormatter: React.FC<ContentFormatterProps> = ({ content, onFormat }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [aiProvider, setAiProvider] = useState<'gemini' | 'xai'>('gemini');
+export function ContentFormatter({ content, onUpdate }: ContentFormatterProps) {
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [aiProvider, setAiProvider] = useState<AIProvider>('gemini');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleFormat = () => {
-    const formattedContent = optimizeContent(content);
-    onFormat(formattedContent);
+  const handleOptimize = () => {
+    const optimizedContent = optimizeContent(content);
+    onUpdate(optimizedContent);
   };
 
-  const handleAIEnhance = async () => {
-    setIsLoading(true);
+  const handleEnhanceWithAI = async () => {
+    setIsEnhancing(true);
+    setError(null);
     try {
-      const enhancedContent = await enhanceContentWithAI(content, aiProvider);
-      const formattedContent = optimizeContent(enhancedContent);
-      onFormat(formattedContent);
-    } catch (error) {
-      console.error('Error enhancing content:', error);
+      const enhancedContent = await enhanceContent(content, aiProvider);
+      onUpdate(enhancedContent);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to enhance content');
     } finally {
-      setIsLoading(false);
+      setIsEnhancing(false);
     }
   };
 
@@ -33,32 +34,29 @@ export const ContentFormatter: React.FC<ContentFormatterProps> = ({ content, onF
     <div className="flex flex-col gap-4">
       <div className="flex gap-4">
         <button
-          onClick={handleFormat}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out"
+          onClick={handleOptimize}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          Format Content
+          Format
         </button>
-        <div className="flex-1 flex gap-2">
-          <select
-            value={aiProvider}
-            onChange={(e) => setAiProvider(e.target.value as 'gemini' | 'xai')}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={isLoading}
-          >
-            <option value="gemini">Gemini AI</option>
-            <option value="xai">XAI</option>
-          </select>
-          <button
-            onClick={handleAIEnhance}
-            disabled={isLoading}
-            className={`flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out ${
-              isLoading ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            {isLoading ? 'Enhancing...' : 'AI Enhance'}
-          </button>
-        </div>
+        <button
+          onClick={handleEnhanceWithAI}
+          disabled={isEnhancing}
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
+        >
+          {isEnhancing ? 'Enhancing...' : 'Enhance with AI'}
+        </button>
+        <select
+          value={aiProvider}
+          onChange={(e) => setAiProvider(e.target.value as AIProvider)}
+          className="px-3 py-1 border border-gray-300 rounded"
+          disabled={isEnhancing}
+        >
+          <option value="gemini">Gemini</option>
+          <option value="xai">XAI</option>
+        </select>
       </div>
+      {error && <div className="text-red-500">{error}</div>}
     </div>
   );
-};
+}
