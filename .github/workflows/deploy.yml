@@ -31,38 +31,33 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref }}
       
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '18'
+          cache: 'npm'
           
-      - name: Clean and install
+      - name: Clean npm cache and install dependencies
         run: |
-          rm -rf node_modules dist .cache
           npm cache clean --force
-          npm ci
-        
+          rm -rf node_modules package-lock.json
+          npm install
+          
       - name: Build
-        run: |
-          echo "Building commit: ${{ github.sha }}"
-          npm run build
         env:
-          VITE_API_URL: 'https://linkedinformat-api.vercel.app'
-          VITE_BUILD_TIME: ${{ github.event.head_commit.timestamp }}
           VITE_COMMIT_SHA: ${{ github.sha }}
+          VITE_BUILD_TIME: ${{ github.event.repository.updated_at }}
+        run: npm run build
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
         
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v2
         with:
           path: './dist'
           
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v3
