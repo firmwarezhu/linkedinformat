@@ -23,6 +23,9 @@ jobs:
           node-version: '20'
           cache: 'npm'
           
+      - name: Clear npm cache
+        run: npm cache clean --force
+          
       - name: Install dependencies
         run: npm ci
         
@@ -30,6 +33,7 @@ jobs:
         run: npm run build
         env:
           VITE_API_URL: 'https://linkedinformat-api.vercel.app'
+          VITE_BUILD_TIME: ${{ github.event.head_commit.timestamp }}
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
