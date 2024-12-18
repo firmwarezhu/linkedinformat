@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
 
 const tips = [

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Copy, Sparkles, RotateCcw, Save, Trash2 } from 'lucide-react';
 import { optimizeContent } from '../utils/contentOptimizer';
 import { enhanceContent, type AIProvider } from '../utils/aiService';
