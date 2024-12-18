@@ -1,7 +1,26 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const XAI_API_KEY = import.meta.env.VITE_XAI_API_KEY;
+// Encoded API key (Base64 + simple shift)
+const ENCODED_GEMINI_KEY = 'QUlaYVN5RGFVNXpibmhpWW5aU1ptZHVlRXRqY1VsTVJFMVhRMDQ9'; // Replace with your encoded key
+const XAI_KEY_ENCODED = 'eGFpLTc5UG1jMDluSXVRenBTNnBvd3RXN2J6V2VXMXpIazZhbXBscGY1VjB2bmZ4cEdUb2pMNEtOdk9RQVl2eHpYY0tPc25adG52NW9nZEFCWFBH';
+
+function decodeKey(encodedKey: string): string {
+  try {
+    // First base64 decode
+    const base64Decoded = atob(encodedKey);
+    // Then decode our custom encoding (simple shift in this example)
+    return base64Decoded
+      .split('')
+      .map(char => String.fromCharCode(char.charCodeAt(0) - 1))
+      .join('');
+  } catch (error) {
+    console.error('Error decoding key:', error);
+    return '';
+  }
+}
+
+const GEMINI_API_KEY = decodeKey(ENCODED_GEMINI_KEY);
+const XAI_API_KEY = decodeKey(XAI_KEY_ENCODED);
 
 if (!GEMINI_API_KEY || !XAI_API_KEY) {
   console.warn('Missing API keys. Please check your environment variables.');
@@ -93,21 +112,28 @@ async function enhanceWithXAI(content: string): Promise<string> {
   }
 }
 
-export async function enhanceContentWithAI(content: string, provider: AIProvider = 'gemini'): Promise<string> {
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
+async function enhanceContent(content: string, provider: AIProvider = 'gemini'): Promise<string> {
   try {
-    if (provider === 'gemini') {
-      return await enhanceWithGemini(content);
-    } else {
-      return await enhanceWithXAI(content);
+    const response = await fetch(`${API_URL}/api/enhance`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content, provider }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    const data = await response.json();
+    return data.enhancedContent;
   } catch (error) {
     console.error('Error enhancing content:', error);
-    // Fallback to the other provider if one fails
-    try {
-      return await (provider === 'gemini' ? enhanceWithXAI(content) : enhanceWithGemini(content));
-    } catch (fallbackError) {
-      console.error('Both AI providers failed:', fallbackError);
-      return content; // Return original content if both APIs fail
-    }
+    throw error;
   }
 }
+
+export { enhanceContent, type AIProvider };
