@@ -23,6 +23,9 @@ function App() {
   return (
     <div className="relative min-h-screen bg-gray-100">
       <Header />
+      <div className="z-50">
+        <VersionInfo />
+      </div>
       <main className="container mx-auto px-4 py-8 max-w-5xl">
         <Editor
           content={inputContent}
@@ -32,7 +35,6 @@ function App() {
         />
         <Tips />
       </main>
-      <VersionInfo />
     </div>
   );
 }

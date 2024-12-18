@@ -14,10 +14,10 @@ const VersionInfo: React.FC = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-2 right-2 text-xs text-gray-500">
-      <div>Version: {version}</div>
-      <div>Build Date: {buildDate}</div>
-      <div>Current Time: {currentTime.toLocaleString()}</div>
+    <div className="fixed bottom-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-200">
+      <div className="text-sm font-medium text-gray-700">Version: {version}</div>
+      <div className="text-sm text-gray-600">Build Date: {buildDate}</div>
+      <div className="text-sm text-gray-600">Current Time: {currentTime.toLocaleString()}</div>
     </div>
   );
 };
