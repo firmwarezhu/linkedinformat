@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { optimizeContent } from '../utils/contentOptimizer';
 import { enhanceContent, type AIProvider } from '../utils/aiService';
 
