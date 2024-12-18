@@ -112,9 +112,13 @@ async function enhanceWithXAI(content: string): Promise<string> {
   }
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || 'https://linkedinformat-api.vercel.app';
 
 async function enhanceContent(content: string, provider: AIProvider = 'gemini'): Promise<string> {
+  if (!content || content.trim() === '') {
+    throw new Error('Please enter some content to enhance');
+  }
+
   try {
     const response = await fetch(`${API_URL}/api/enhance`, {
       method: 'POST',
@@ -125,14 +129,38 @@ async function enhanceContent(content: string, provider: AIProvider = 'gemini'):
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      let errorMessage = `Error: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorData.message || errorMessage;
+      } catch {
+        // If error response is not JSON, use status text
+        errorMessage = `${errorMessage} - ${response.statusText}`;
+      }
+
+      if (response.status === 404) {
+        throw new Error('API endpoint not found. Please check your API configuration.');
+      } else if (response.status === 401 || response.status === 403) {
+        throw new Error('API key error. Please check your API configuration.');
+      } else {
+        throw new Error(errorMessage);
+      }
     }
 
     const data = await response.json();
+    
+    if (!data.enhancedContent) {
+      throw new Error('No enhanced content received from the API');
+    }
+    
     return data.enhancedContent;
   } catch (error) {
     console.error('Error enhancing content:', error);
-    throw error;
+    if (error instanceof Error) {
+      throw new Error(`Failed to enhance content: ${error.message}`);
+    } else {
+      throw new Error('An unexpected error occurred while enhancing the content');
+    }
   }
 }
 
