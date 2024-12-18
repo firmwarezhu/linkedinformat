@@ -16,24 +16,29 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
       
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
           
-      - name: Clean install
+      - name: Clean and install
         run: |
-          rm -rf node_modules
+          rm -rf node_modules dist .cache
           npm cache clean --force
           npm ci
         
       - name: Build
-        run: npm run build
+        run: |
+          echo "Building commit: ${{ github.sha }}"
+          npm run build
         env:
           VITE_API_URL: 'https://linkedinformat-api.vercel.app'
           VITE_BUILD_TIME: ${{ github.event.head_commit.timestamp }}
+          VITE_COMMIT_SHA: ${{ github.sha }}
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
