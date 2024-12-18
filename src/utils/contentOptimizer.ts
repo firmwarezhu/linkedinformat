@@ -76,11 +76,6 @@ const addHashtags = (text: string): string => {
   return `${text}\n\n${allHashtags.join(' ')}`;
 };
 
-const addIntro = (text: string): string => {
-  // For technical posts, no fancy intros needed
-  return text;
-};
-
 export const optimizeContent = (content: string): string => {
   if (!content) return '';
   
@@ -90,7 +85,6 @@ export const optimizeContent = (content: string): string => {
   optimized = addEmphasis(optimized);
   optimized = addSpacing(optimized);
   optimized = addHashtags(optimized);
-  // Skip intro for technical posts
   
   return optimized;
 };
