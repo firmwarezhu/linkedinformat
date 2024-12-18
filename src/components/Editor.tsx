@@ -19,6 +19,7 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [aiProvider, setAiProvider] = useState<'gemini' | 'xai'>('gemini');
   const [showAiVersion, setShowAiVersion] = useState(false);
+  const [enhanceError, setEnhanceError] = useState<string | null>(null);
 
   // Update optimized output whenever input changes
   useEffect(() => {
@@ -61,12 +62,18 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
 
   const handleAIEnhance = async () => {
     setIsEnhancing(true);
+    setEnhanceError(null);
     try {
+      if (!inputContent.trim()) {
+        throw new Error('Please enter some content to enhance');
+      }
       const enhancedContent = await enhanceContentWithAI(inputContent, aiProvider);
       setAiEnhancedOutput(enhancedContent);
       setShowAiVersion(true);
     } catch (error) {
       console.error('Error enhancing content:', error);
+      setEnhanceError(error instanceof Error ? error.message : 'Failed to enhance content');
+      setShowAiVersion(false);
     } finally {
       setIsEnhancing(false);
     }
@@ -141,6 +148,11 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
                 <Sparkles className="w-4 h-4" />
                 {isEnhancing ? 'Enhancing...' : 'AI Enhance'}
               </button>
+              {enhanceError && (
+                <div className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded-lg">
+                  {enhanceError}
+                </div>
+              )}
             </div>
           </div>
         </div>
