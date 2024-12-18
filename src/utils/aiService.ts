@@ -70,27 +70,27 @@ async function enhanceWithXAI(content: string): Promise<string> {
   }
 
   try {
-    const response = await fetch('https://api.xai.com/v1/enhance', {
+    const response = await fetch(`${API_URL}/api/enhance`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${XAI_API_KEY}`
       },
       body: JSON.stringify({
-        prompt: `Enhance this LinkedIn post to be more engaging and professional: ${content}`,
-        max_tokens: 500
+        content: content
       })
     });
 
     if (!response.ok) {
-      throw new Error(`XAI API error: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`API error (${response.status}): ${errorText}`);
     }
 
     const data = await response.json();
-    return data.text;
+    return data.enhancedContent || data.text;
   } catch (error) {
-    console.error('Error with XAI API:', error);
-    throw error;
+    console.error('Error enhancing content:', error);
+    throw new Error('Failed to enhance content. Please try again later.');
   }
 }
 
