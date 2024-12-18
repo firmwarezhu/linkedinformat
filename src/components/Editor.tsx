@@ -4,13 +4,13 @@ import { optimizeContent } from '../utils/contentOptimizer';
 import { enhanceContent, type AIProvider } from '../utils/aiService';
 
 interface EditorProps {
-  inputContent: string;
-  setInputContent: (content: string) => void;
+  content: string;
+  onContentChange: (content: string) => void;
   copied: boolean;
   onCopy: () => void;
 }
 
-export function Editor({ inputContent, setInputContent, copied, onCopy }: EditorProps) {
+export function Editor({ content, onContentChange, copied, onCopy }: EditorProps) {
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [autoSave, setAutoSave] = useState(true);
@@ -23,21 +23,21 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
 
   // Update optimized output whenever input changes
   useEffect(() => {
-    setOptimizedOutput(optimizeContent(inputContent));
-  }, [inputContent]);
+    setOptimizedOutput(optimizeContent(content));
+  }, [content]);
 
   // Auto-save to localStorage
   useEffect(() => {
     if (autoSave) {
-      localStorage.setItem('linkedinFormatter_content', inputContent);
+      localStorage.setItem('linkedinFormatter_content', content);
     }
-  }, [inputContent, autoSave]);
+  }, [content, autoSave]);
 
   // Load saved content on mount
   useEffect(() => {
     const savedContent = localStorage.getItem('linkedinFormatter_content');
-    if (savedContent && !inputContent) {
-      setInputContent(savedContent);
+    if (savedContent && !content) {
+      onContentChange(savedContent);
     }
   }, []);
 
@@ -45,29 +45,29 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
   const handleUndo = () => {
     if (historyIndex > 0) {
       const previousContent = history[historyIndex - 1];
-      setInputContent(previousContent);
+      onContentChange(previousContent);
       setHistoryIndex(historyIndex - 1);
     }
   };
 
   // Add to history when content changes
   useEffect(() => {
-    if (inputContent !== history[historyIndex]) {
+    if (content !== history[historyIndex]) {
       const newHistory = history.slice(0, historyIndex + 1);
-      newHistory.push(inputContent);
+      newHistory.push(content);
       setHistory(newHistory);
       setHistoryIndex(newHistory.length - 1);
     }
-  }, [inputContent]);
+  }, [content]);
 
   const handleAIEnhance = async () => {
     setIsEnhancing(true);
     setEnhanceError(null);
     try {
-      if (!inputContent.trim()) {
+      if (!content.trim()) {
         throw new Error('Please enter some content to enhance');
       }
-      const enhancedContent = await enhanceContent(inputContent, aiProvider);
+      const enhancedContent = await enhanceContent(content, aiProvider);
       setAiEnhancedOutput(enhancedContent);
       setShowAiVersion(true);
     } catch (error) {
@@ -79,8 +79,8 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
     }
   };
 
-  const characterCount = inputContent.length;
-  const wordCount = inputContent.trim().split(/\s+/).filter(Boolean).length;
+  const characterCount = content.length;
+  const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
 
   const displayedOutput = showAiVersion ? aiEnhancedOutput : optimizedOutput;
 
@@ -117,10 +117,10 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
             </div>
           </div>
           <textarea
-            value={inputContent}
-            onChange={(e) => setInputContent(e.target.value)}
-            placeholder="Paste your content here..."
-            className="w-full h-[400px] p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"
+            className="w-full h-48 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Paste your LinkedIn content here..."
+            value={content}
+            onChange={(e) => onContentChange(e.target.value)}
           />
           <div className="flex items-center justify-between mt-2">
             <div className="text-sm text-gray-500">
@@ -166,7 +166,7 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
               </h2>
             </div>
           </div>
-          <div className="w-full h-[400px] p-4 bg-gray-50 rounded-lg overflow-y-auto mb-4">
+          <div className="w-full h-48 p-4 bg-gray-50 rounded-lg overflow-y-auto mb-4">
             <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed">
               {displayedOutput}
             </div>
@@ -213,7 +213,7 @@ export function Editor({ inputContent, setInputContent, copied, onCopy }: Editor
       <div className="flex justify-center">
         <button
           onClick={() => {
-            setInputContent('');
+            onContentChange('');
             setHistory([]);
             setHistoryIndex(-1);
             setOptimizedOutput('');
