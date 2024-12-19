@@ -8,17 +8,35 @@ import { optimizeContent } from './utils/contentOptimizer';
 function App() {
   const [inputContent, setInputContent] = useState('');
   const [copied, setCopied] = useState(false);
+  const [aiEnhancedContent, setAiEnhancedContent] = useState('');
+  const [showAiVersion, setShowAiVersion] = useState(false);
 
   const handleCopy = useCallback(async () => {
     try {
-      const optimizedContent = optimizeContent(inputContent);
-      await navigator.clipboard.writeText(optimizedContent);
+      console.log('Copy state:', {
+        showAiVersion,
+        hasAiContent: Boolean(aiEnhancedContent),
+        aiContentLength: aiEnhancedContent?.length,
+        inputContentLength: inputContent?.length,
+      });
+
+      const contentToCopy = showAiVersion && aiEnhancedContent 
+        ? aiEnhancedContent 
+        : optimizeContent(inputContent);
+
+      console.log('Content to copy:', {
+        length: contentToCopy?.length,
+        preview: contentToCopy?.substring(0, 50),
+        isAiVersion: showAiVersion && aiEnhancedContent,
+      });
+
+      await navigator.clipboard.writeText(contentToCopy);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy text:', err);
     }
-  }, [inputContent]);
+  }, [inputContent, aiEnhancedContent, showAiVersion]);
 
   return (
     <div className="relative min-h-screen bg-gray-100">
@@ -32,6 +50,10 @@ function App() {
           onContentChange={setInputContent}
           onCopy={handleCopy}
           copied={copied}
+          aiEnhancedContent={aiEnhancedContent}
+          onAiContentChange={setAiEnhancedContent}
+          showAiVersion={showAiVersion}
+          onShowAiVersionChange={setShowAiVersion}
         />
         <Tips />
       </main>

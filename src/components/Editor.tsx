@@ -8,22 +8,38 @@ interface EditorProps {
   onContentChange: (content: string) => void;
   copied: boolean;
   onCopy: () => void;
+  aiEnhancedContent: string;
+  onAiContentChange: (content: string) => void;
+  showAiVersion: boolean;
+  onShowAiVersionChange: (show: boolean) => void;
 }
 
-export function Editor({ content, onContentChange, copied, onCopy }: EditorProps) {
+export function Editor({ 
+  content, 
+  onContentChange, 
+  copied, 
+  onCopy,
+  aiEnhancedContent,
+  onAiContentChange,
+  showAiVersion,
+  onShowAiVersionChange
+}: EditorProps) {
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [autoSave, setAutoSave] = useState(true);
   const [optimizedOutput, setOptimizedOutput] = useState('');
-  const [aiEnhancedOutput, setAiEnhancedOutput] = useState('');
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [aiProvider, setAiProvider] = useState<AIProvider>('gemini');
-  const [showAiVersion, setShowAiVersion] = useState(false);
   const [enhanceError, setEnhanceError] = useState<string | null>(null);
 
   // Update optimized output whenever input changes
   useEffect(() => {
-    setOptimizedOutput(optimizeContent(content));
+    const optimized = optimizeContent(content);
+    console.log('Optimized content updated:', {
+      originalLength: content?.length,
+      optimizedLength: optimized?.length,
+    });
+    setOptimizedOutput(optimized);
   }, [content]);
 
   // Auto-save to localStorage
@@ -67,13 +83,21 @@ export function Editor({ content, onContentChange, copied, onCopy }: EditorProps
       if (!content.trim()) {
         throw new Error('Please enter some content to enhance');
       }
-      const enhancedContent = await enhanceContent(content, aiProvider);
-      setAiEnhancedOutput(enhancedContent);
-      setShowAiVersion(true);
+      console.log('Starting AI enhancement:', {
+        contentLength: content?.length,
+        provider: aiProvider,
+      });
+      const enhanced = await enhanceContent(content, aiProvider);
+      console.log('AI enhancement complete:', {
+        enhancedLength: enhanced?.length,
+        preview: enhanced?.substring(0, 50),
+      });
+      onAiContentChange(enhanced);
+      onShowAiVersionChange(true);
     } catch (error) {
       console.error('Error enhancing content:', error);
       setEnhanceError(error instanceof Error ? error.message : 'Failed to enhance content');
-      setShowAiVersion(false);
+      onShowAiVersionChange(false);
     } finally {
       setIsEnhancing(false);
     }
@@ -82,7 +106,17 @@ export function Editor({ content, onContentChange, copied, onCopy }: EditorProps
   const characterCount = content.length;
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
 
-  const displayedOutput = showAiVersion ? aiEnhancedOutput : optimizedOutput;
+  const displayedOutput = showAiVersion && aiEnhancedContent 
+    ? aiEnhancedContent 
+    : optimizedOutput;
+
+  console.log('Display state:', {
+    showAiVersion,
+    hasAiContent: Boolean(aiEnhancedContent),
+    aiContentLength: aiEnhancedContent?.length,
+    optimizedLength: optimizedOutput?.length,
+    displayedLength: displayedOutput?.length,
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -175,7 +209,7 @@ export function Editor({ content, onContentChange, copied, onCopy }: EditorProps
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500">Format:</span>
               <button
-                onClick={() => setShowAiVersion(false)}
+                onClick={() => onShowAiVersionChange(false)}
                 className={`px-4 py-1.5 rounded-lg transition-all ${
                   !showAiVersion
                     ? 'bg-blue-100 text-blue-600 font-medium'
@@ -185,13 +219,13 @@ export function Editor({ content, onContentChange, copied, onCopy }: EditorProps
                 Normal
               </button>
               <button
-                onClick={() => setShowAiVersion(true)}
+                onClick={() => onShowAiVersionChange(true)}
                 className={`px-4 py-1.5 rounded-lg transition-all ${
                   showAiVersion
                     ? 'bg-purple-100 text-purple-600 font-medium'
                     : 'bg-gray-50 hover:bg-gray-100 text-gray-600'
                 }`}
-                disabled={!aiEnhancedOutput}
+                disabled={!aiEnhancedContent}
               >
                 AI Enhanced
               </button>
@@ -217,8 +251,8 @@ export function Editor({ content, onContentChange, copied, onCopy }: EditorProps
             setHistory([]);
             setHistoryIndex(-1);
             setOptimizedOutput('');
-            setAiEnhancedOutput('');
-            setShowAiVersion(false);
+            onAiContentChange('');
+            onShowAiVersionChange(false);
           }}
           className="flex items-center gap-2 px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
         >
