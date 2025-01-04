@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { Header } from './components/Header';
 import { Editor } from './components/Editor';
 import { Tips } from './components/Tips';
+import VersionInfo from './components/VersionInfo';
 import { optimizeContent } from './utils/contentOptimizer';
 
 function App() {
@@ -40,6 +41,9 @@ function App() {
   return (
     <div className="relative min-h-screen bg-gray-100 pt-8">
       <Header />
+      <div className="z-50 fixed bottom-0 right-0">
+        <VersionInfo />
+      </div>
       <main className="container mx-auto px-4 py-8 max-w-5xl">
         <Editor
           content={inputContent}
