@@ -44,7 +44,7 @@ function App() {
       <div className="z-50 fixed bottom-0 right-0">
         <VersionInfo />
       </div>
-      <main className="container mx-auto px-4 py-4 max-w-5xl">
+      <main className="container mx-auto px-4 py-2 max-w-5xl">
         <Editor
           content={inputContent}
           onContentChange={setInputContent}
