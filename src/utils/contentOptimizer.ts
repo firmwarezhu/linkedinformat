@@ -14,8 +14,8 @@ const formatHeadings = (text: string): string => {
       // Just capitalize first letter, keep rest as is
       const formattedTitle = title.charAt(0).toUpperCase() + title.slice(1);
       
-      // Use for main title, for subtopics
-      const marker = isFirstHeading ? '' : '';
+      // Use 💡 for main title, 🔷 for subtopics
+      const marker = isFirstHeading ? '💡' : '🔷';
       isFirstHeading = false;
       
       return `\n${marker} ${formattedTitle}\n`;
