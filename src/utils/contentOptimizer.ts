@@ -14,8 +14,8 @@ const formatHeadings = (text: string): string => {
       // Just capitalize first letter, keep rest as is
       const formattedTitle = title.charAt(0).toUpperCase() + title.slice(1);
       
-      // Use 💡 for main title, 🔷 for subtopics
-      const marker = isFirstHeading ? '💡' : '🔷';
+      // Use for main title, for subtopics
+      const marker = isFirstHeading ? '' : '';
       isFirstHeading = false;
       
       return `\n${marker} ${formattedTitle}\n`;
@@ -47,33 +47,37 @@ const addSpacing = (text: string): string => {
 };
 
 const addHashtags = (text: string): string => {
-  // Technical-focused hashtags
-  const techHashtags = [
-    '#Linux',
-    '#KernelDev',
-    '#SystemProgramming',
-    '#TechDetails'
-  ];
-
   const contentWords = text.toLowerCase().split(/\W+/);
   const specificHashtags = new Set<string>();
 
-  // Add specific technical hashtags based on content
-  if (contentWords.some(word => ['kernel', 'linux', 'driver'].includes(word))) {
-    specificHashtags.add('#LinuxKernel');
-  }
-  if (contentWords.some(word => ['memory', 'allocation', 'heap'].includes(word))) {
-    specificHashtags.add('#SystemDesign');
-  }
-  if (contentWords.some(word => ['performance', 'optimization'].includes(word))) {
-    specificHashtags.add('#Performance');
-  }
-  if (contentWords.some(word => ['security', 'vulnerability'].includes(word))) {
-    specificHashtags.add('#Security');
+  // Check if content is technical
+  const isTechnicalContent = contentWords.some(word => 
+    ['kernel', 'linux', 'driver', 'memory', 'allocation', 'heap', 
+     'performance', 'optimization', 'security', 'vulnerability', 
+     'programming', 'code', 'algorithm', 'system', 'tech'].includes(word)
+  );
+
+  // Only add hashtags if content is technical
+  if (isTechnicalContent) {
+    // Add specific technical hashtags based on content
+    if (contentWords.some(word => ['kernel', 'linux', 'driver'].includes(word))) {
+      specificHashtags.add('#LinuxKernel');
+    }
+    if (contentWords.some(word => ['memory', 'allocation', 'heap'].includes(word))) {
+      specificHashtags.add('#SystemDesign');
+    }
+    if (contentWords.some(word => ['performance', 'optimization'].includes(word))) {
+      specificHashtags.add('#Performance');
+    }
+    if (contentWords.some(word => ['security', 'vulnerability'].includes(word))) {
+      specificHashtags.add('#Security');
+    }
+
+    const allHashtags = [...specificHashtags].slice(0, 3); // Limit to 3 focused hashtags
+    return allHashtags.length > 0 ? `${text}\n\n${allHashtags.join(' ')}` : text;
   }
 
-  const allHashtags = [...techHashtags, ...specificHashtags].slice(0, 3); // Limit to 3 focused hashtags
-  return `${text}\n\n${allHashtags.join(' ')}`;
+  return text;
 };
 
 export const optimizeContent = (content: string): string => {
