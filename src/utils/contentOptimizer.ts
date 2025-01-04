@@ -32,7 +32,8 @@ const addEmphasis = (text: string): string => {
       return convertToBold(p1);
     }) // Convert text between ** to Unicode bold characters
     .replace(/_([^_]+)_/g, '$1') // Remove italic markers
-    .replace(/\*\*|__/g, ''); // Remove any remaining bold/italic markers
+    .replace(/\*\*|__/g, '') // Remove any remaining bold/italic markers
+    .replace(/\*\*/g, ''); // Additional pass to remove any lingering ** markers
 };
 
 const convertToBold = (text: string): string => {
