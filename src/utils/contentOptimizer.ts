@@ -14,8 +14,8 @@ const formatHeadings = (text: string): string => {
       // Just capitalize first letter, keep rest as is
       const formattedTitle = title.charAt(0).toUpperCase() + title.slice(1);
       
-      // Use 💡 for main title, 🔷 for subtopics
-      const marker = isFirstHeading ? '💡' : '🔷';
+      // Use for main title, for subtopics
+      const marker = isFirstHeading ? '' : '';
       isFirstHeading = false;
       
       return `\n${marker} ${formattedTitle}\n`;
@@ -39,7 +39,26 @@ const convertToBold = (text: string): string => {
   return text
     .split('')
     .map(char => {
-      return String.fromCharCode(char.charCodeAt(0) + 0x1D400);
+      // Check if the character is a letter
+      if (/[a-zA-Z]/.test(char)) {
+        // Unicode bold mapping for letters
+        const boldMap: {[key: string]: string} = {
+          'a': '', 'b': '', 'c': '', 'd': '', 'e': '', 
+          'f': '', 'g': '', 'h': '', 'i': '', 'j': '', 
+          'k': '', 'l': '', 'm': '', 'n': '', 'o': '', 
+          'p': '', 'q': '', 'r': '', 's': '', 't': '', 
+          'u': '', 'v': '', 'w': '', 'x': '', 'y': '', 
+          'z': '',
+          'A': '', 'B': '', 'C': '', 'D': '', 'E': '', 
+          'F': '', 'G': '', 'H': '', 'I': '', 'J': '', 
+          'K': '', 'L': '', 'M': '', 'N': '', 'O': '', 
+          'P': '', 'Q': '', 'R': '', 'S': '', 'T': '', 
+          'U': '', 'V': '', 'W': '', 'X': '', 'Y': '', 
+          'Z': ''
+        };
+        return boldMap[char] || char;
+      }
+      return char;
     })
     .join('');
 };
