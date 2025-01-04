@@ -25,7 +25,7 @@ const formatHeadings = (text: string): string => {
   return formattedLines.join('\n');
 };
 
-const addEmphasis = (text: string): string => {
+export const addEmphasis = (text: string): string => {
   return text
     .replace(/`([^`]+)`/g, '「$1」') // Code snippets
     .replace(/\*\*([^*]+)\*\*/g, (_match, p1) => {
