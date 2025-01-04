@@ -28,9 +28,20 @@ const formatHeadings = (text: string): string => {
 const addEmphasis = (text: string): string => {
   return text
     .replace(/`([^`]+)`/g, '「$1」') // Code snippets
-    .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove bold markers
+    .replace(/\*\*([^*]+)\*\*/g, (match, p1) => {
+      return convertToBold(p1);
+    }) // Convert text between ** to Unicode bold characters
     .replace(/_([^_]+)_/g, '$1') // Remove italic markers
     .replace(/\*\*|__/g, ''); // Remove any remaining bold/italic markers
+};
+
+const convertToBold = (text: string): string => {
+  return text
+    .split('')
+    .map(char => {
+      return String.fromCharCode(char.charCodeAt(0) + 0x1D400);
+    })
+    .join('');
 };
 
 const addSpacing = (text: string): string => {
