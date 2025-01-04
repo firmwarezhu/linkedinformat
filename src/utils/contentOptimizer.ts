@@ -14,8 +14,8 @@ const formatHeadings = (text: string): string => {
       // Just capitalize first letter, keep rest as is
       const formattedTitle = title.charAt(0).toUpperCase() + title.slice(1);
       
-      // Use for main title, for subtopics
-      const marker = isFirstHeading ? '' : '';
+      // Use 💡 for main title, 🔷 for subtopics
+      const marker = isFirstHeading ? '💡' : '🔷';
       isFirstHeading = false;
       
       return `\n${marker} ${formattedTitle}\n`;
@@ -29,7 +29,8 @@ const addEmphasis = (text: string): string => {
   return text
     .replace(/`([^`]+)`/g, '「$1」') // Code snippets
     .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove bold markers
-    .replace(/_([^_]+)_/g, '$1'); // Remove italic markers
+    .replace(/_([^_]+)_/g, '$1') // Remove italic markers
+    .replace(/\*\*|__/g, ''); // Remove any remaining bold/italic markers
 };
 
 const addSpacing = (text: string): string => {
