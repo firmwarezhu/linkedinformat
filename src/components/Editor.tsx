@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Copy, Sparkles, RotateCcw, Save, Trash2 } from 'lucide-react';
-import { optimizeContent } from '../utils/contentOptimizer';
+import { optimizeContent, addEmphasis } from '../utils/contentOptimizer';
 import { enhanceContent, type AIProvider } from '../utils/aiService';
 
 interface EditorProps {
@@ -92,7 +92,10 @@ export function Editor({
         enhancedLength: enhanced?.length,
         preview: enhanced?.substring(0, 50),
       });
-      onAiContentChange(enhanced);
+      //Convert text between ** to Unicode bold characters
+      const enhancedWithBold = addEmphasis(enhanced);
+      console.log('Text with bold characters:', enhancedWithBold);
+      onAiContentChange(enhancedWithBold);
       onShowAiVersionChange(true);
     } catch (error) {
       console.error('Error enhancing content:', error);
