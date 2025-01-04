@@ -1,10 +1,4 @@
 // API keys are handled by the backend now
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const XAI_API_KEY = import.meta.env.VITE_XAI_API_KEY;
-
-if (!GEMINI_API_KEY || !XAI_API_KEY) {
-  console.warn('Missing API keys. Please check your environment variables.');
-}
 
 const API_URL = 'https://linkedinformat-api.vercel.app';
 
