@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 const VersionInfo: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const version = '1.1.0';  // We can update this when making releases
+  const version = '1.2.0';  // We can update this when making releases
   const buildTime = import.meta.env.VITE_BUILD_TIME || new Date().toISOString();
   const buildDate = new Date(buildTime).toLocaleDateString();
   const commitSha = import.meta.env.VITE_COMMIT_SHA?.substring(0, 7) || 'dev';
